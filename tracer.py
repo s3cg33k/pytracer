@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import logging
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
-# Scapy Library Required
+# Required Library
 from scapy.all import *
 import socket as s
 import argparse
@@ -11,55 +11,55 @@ from sys import argv
 usage='''Usage: %s [OPTIONS] HOST
            
   OPTIONS:
-  -P PROTO            Protocol Type (tcp/udp/icmp)
+  -P PROTO            Protocol Type (TCP/UDP/ICMP)
   -s SPORT            Local Port
   -p PORT             Remote Port
   -T TTL              Time To Live
   -t TIMEOUT          Timeout
-  -v 		              Version
+  -v 		      Version
   TCP:
     -f FLAG           TCP Flag
-        syn -->  syn trace
-	      ack -->  ack trace
-	      fin -->  fin trace
-	      sack --> syn+ack trace
-	      rst -->  rst trace
-	      urg -->  urg trace
-	      fpu -->  xmas trace
+	syn -->  syn trace
+	ack -->  ack trace
+	fin -->  fin trace
+	sack --> syn+ack trace
+	rst -->  rst trace
+	urg -->  urg trace
+	fpu -->  xmas trace
   ICMP:
     -R REQ            ICMP Request Type
-        echo-reply (0)
-        echo-request (8)
-        timestamp (13)
+      echo-reply (0)
+      echo-request (8)
+      timestamp (13)
 Target Specs:
   HOST              Remote Host''' % argv[0]
 ###################Args#####################
 parser = argparse.ArgumentParser(usage=usage)
 parser.add_argument('-P', 
-		                dest='protocol')
+		  dest='protocol')
 parser.add_argument('-s', 
-		                dest='sport')
+		  dest='sport')
 parser.add_argument(type=str,
-                    dest='rhost')
+                  dest='rhost')
 parser.add_argument('-p', 
-		                dest='rport', 
-		                default='80')
+		  dest='rport', 
+		  default='80')
 parser.add_argument('-f', 
-		                dest='flag', 
-		                default='S')
+		  dest='flag', 
+		  default='S')
 parser.add_argument('-T', 
-		                dest='ttl', 
-		                default='10')
+		  dest='ttl', 
+		  default='10')
 parser.add_argument('-t', 
-		                dest='timeout', 
-		                default='3')
+		  dest='timeout', 
+		  default='3')
 parser.add_argument('-v', 
-		                action='version', 
-		                version='tracer v1.0 (Coded By Mahy)')
+		  action='version', 
+		  version='tracer v1.0 (Coded By Mahy)')
 parser.add_argument('-R', 
-		                dest='icmpreq',
-		                type=str,
-		                default='echo-request')
+		  dest='icmpreq',
+		  type=str,
+		  default='echo-request') # echo-request
 args = parser.parse_args()
 protocol = args.protocol
 sport = args.sport
@@ -70,7 +70,7 @@ ttl = args.ttl
 timeout = args.timeout
 icmpreq = args.icmpreq
 #################Trace-Tools################
-def tcptracer():
+def tcptracer(): # TCP Traceroute
   ip = IP()
   tcp = TCP()
   ip.dst = rhost
@@ -105,7 +105,7 @@ def tcptracer():
   print("HOST\t\t\tTTL\t\tREQUEST\t\tRESPONSE")
   ans.summary(lambda(s,r):
 		r.sprintf("%IP.src%\t\t%IP.ttl%\t\t"+str(flag).upper()+"\t\t{TCP:%TCP.flags%}"))
-
+# UDP Traceroute
 def udptracer():
   ip = IP()
   udp = UDP()
@@ -124,7 +124,7 @@ def udptracer():
   print("HOST\t\t\tTTL")
   ans.summary(lambda(s,r):
 		r.sprintf("%IP.src%\t\t%IP.ttl%"))
-
+# ICMP Traceroute
 def icmptracer():
   ip = IP()
   icmp = ICMP()
